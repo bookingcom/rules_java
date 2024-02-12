@@ -64,6 +64,14 @@ JDKS = {
         "macos_aarch64",
         "win",
     ],
+    # Must match JDK repos defined in remote_jdk21_repos()
+    "21": [
+        "linux",
+        "linux_aarch64",
+        "macos",
+        "macos_aarch64",
+        "win",
+    ],
 }
 
 REMOTE_JDK_REPOS = [("remotejdk" + version + "_" + platform) for version in JDKS for platform in JDKS[version]]
@@ -74,6 +82,15 @@ REMOTE_JDK_REPOS = [("remotejdk" + version + "_" + platform) for version in JDKS
 ) for repo in REMOTE_JDK_REPOS]
 
 [register_toolchains("@" + name + "_toolchain_config_repo//:all") for name in REMOTE_JDK_REPOS]
+
+[
+    use_repo(toolchains, "remote_jdk8_" + platform + "_toolchain_config_repo") for platform in ["linux", "linux_aarch64", "linux_s390x", "macos", "macos_aarch64", "windows"]
+]
+
+[
+    register_toolchains("@remote_jdk8_" + platform + "_toolchain_config_repo//:all") for platform in ["linux", "linux_aarch64", "linux_s390x", "macos", "macos_aarch64", "windows"]
+]
+
 
 # Dev dependencies
 bazel_dep(name = "rules_pkg", version = "0.5.1", dev_dependency = True)

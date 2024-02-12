@@ -173,16 +173,6 @@ def remote_jdk8_repos(name = ""):
         ],
         version = "8",
     )
-    REMOTE_JDK8_REPOS = [
-        "remote_jdk8_linux_aarch64",
-        "remote_jdk8_linux_s390x",
-        "remote_jdk8_linux",
-        "remote_jdk8_macos_aarch64",
-        "remote_jdk8_macos",
-        "remote_jdk8_windows",
-    ]
-    for name in REMOTE_JDK8_REPOS:
-        native.register_toolchains("@" + name + "_toolchain_config_repo//:toolchain")
 
 def remote_jdk11_repos():
     """Imports OpenJDK 11 repositories."""
@@ -522,6 +512,87 @@ def remote_jdk20_repos():
         version = "20",
     )
 
+def remote_jdk21_repos():
+    """Imports OpenJDK 21 repositories."""
+    maybe(
+        remote_java_repository,
+        name = "remotejdk21_linux",
+        target_compatible_with = [
+            "@platforms//os:linux",
+            "@platforms//cpu:x86_64",
+        ],
+        sha256 = "5ad730fbee6bb49bfff10bf39e84392e728d89103d3474a7e5def0fd134b300a",
+        strip_prefix = "zulu21.32.17-ca-jdk21.0.2-linux_x64",
+        urls = [
+            "https://mirror.bazel.build/cdn.azul.com/zulu/bin/zulu21.32.17-ca-jdk21.0.2-linux_x64.tar.gz",
+            "https://cdn.azul.com/zulu/bin/zulu21.32.17-ca-jdk21.0.2-linux_x64.tar.gz",
+        ],
+        version = "21",
+    )
+
+    maybe(
+        remote_java_repository,
+        name = "remotejdk21_linux_aarch64",
+        target_compatible_with = [
+            "@platforms//os:linux",
+            "@platforms//cpu:aarch64",
+        ],
+        sha256 = "ce7df1af5d44a9f455617c4b8891443fbe3e4b269c777d8b82ed66f77167cfe0",
+        strip_prefix = "zulu21.32.17-ca-jdk21.0.2-linux_aarch64",
+        urls = [
+            "https://cdn.azul.com/zulu/bin/zulu21.32.17-ca-jdk21.0.2-linux_aarch64.tar.gz",
+            "https://mirror.bazel.build/cdn.azul.com/zulu/bin/zulu21.32.17-ca-jdk21.0.2-linux_aarch64.tar.gz",
+        ],
+        version = "21",
+    )
+
+    maybe(
+        remote_java_repository,
+        name = "remotejdk21_macos",
+        target_compatible_with = [
+            "@platforms//os:macos",
+            "@platforms//cpu:x86_64",
+        ],
+        sha256 = "3ad8fe288eb57d975c2786ae453a036aa46e47ab2ac3d81538ebae2a54d3c025",
+        strip_prefix = "zulu21.32.17-ca-jdk21.0.2-macosx_x64",
+        urls = [
+            "https://mirror.bazel.build/cdn.azul.com/zulu/bin/zulu21.32.17-ca-jdk21.0.2-macosx_x64.tar.gz",
+            "https://cdn.azul.com/zulu/bin/zulu21.32.17-ca-jdk21.0.2-macosx_x64.tar.gz",
+        ],
+        version = "21",
+    )
+
+    maybe(
+        remote_java_repository,
+        name = "remotejdk21_macos_aarch64",
+        target_compatible_with = [
+            "@platforms//os:macos",
+            "@platforms//cpu:aarch64",
+        ],
+        sha256 = "e8260516de8b60661422a725f1df2c36ef888f6fb35393566b00e7325db3d04e",
+        strip_prefix = "zulu21.32.17-ca-jdk21.0.2-macosx_aarch64",
+        urls = [
+            "https://mirror.bazel.build/cdn.azul.com/zulu/bin/zulu21.32.17-ca-jdk21.0.2-macosx_aarch64.tar.gz",
+            "https://cdn.azul.com/zulu/bin/zulu21.32.17-ca-jdk21.0.2-macosx_aarch64.tar.gz",
+        ],
+        version = "21",
+    )
+    maybe(
+        remote_java_repository,
+        name = "remotejdk21_win",
+        target_compatible_with = [
+            "@platforms//os:windows",
+            "@platforms//cpu:x86_64",
+        ],
+        sha256 = "f7cc15ca17295e69c907402dfe8db240db446e75d3b150da7bf67243cded93de",
+        strip_prefix = "zulu21.32.17-ca-jdk21.0.2-win_x64",
+        urls = [
+            "https://mirror.bazel.build/cdn.azul.com/zulu/bin/zulu21.32.17-ca-jdk21.0.2-win_x64.zip",
+            "https://cdn.azul.com/zulu/bin/zulu21.32.17-ca-jdk21.0.2-win_x64.zip",
+        ],
+        version = "21",
+    )
+
 def rules_java_dependencies():
     """An utility method to load all dependencies of rules_java.
 
@@ -529,9 +600,11 @@ def rules_java_dependencies():
     """
 
     local_jdk_repo()
+    remote_jdk8_repos()
     remote_jdk11_repos()
     remote_jdk17_repos()
     remote_jdk20_repos()
+    remote_jdk21_repos()
     java_tools_repos()
 
 def rules_java_toolchains(name = "toolchains"):
@@ -547,6 +620,8 @@ def rules_java_toolchains(name = "toolchains"):
         "17": ["linux", "linux_aarch64", "linux_ppc64le", "linux_s390x", "macos", "macos_aarch64", "win", "win_arm64"],
         # Must match JDK repos defined in remote_jdk20_repos()
         "20": ["linux", "linux_aarch64", "macos", "macos_aarch64", "win"],
+        # Must match JDK repos defined in remote_jdk21_repos()
+        "21": ["linux", "linux_aarch64", "macos", "macos_aarch64", "win"],
     }
 
     REMOTE_JDK_REPOS = [("remotejdk" + version + "_" + platform) for version in JDKS for platform in JDKS[version]]
@@ -560,4 +635,10 @@ def rules_java_toolchains(name = "toolchains"):
         native.register_toolchains(
             "@" + name + "_toolchain_config_repo//:toolchain",
             "@" + name + "_toolchain_config_repo//:bootstrap_runtime_toolchain",
+        )
+
+    for platform in ["linux", "linux_aarch64", "linux_s390x", "macos", "macos_aarch64", "windows"]:
+        native.register_toolchains(
+            "@remote_jdk8_" + platform + "_toolchain_config_repo//:toolchain",
+            "@remote_jdk8_" + platform + "_toolchain_config_repo//:bootstrap_runtime_toolchain",
         )

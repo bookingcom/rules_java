@@ -315,10 +315,37 @@ default_java_toolchain(
 )
 
 default_java_toolchain(
+    name = "toolchain_jdk_21",
+    configuration = dict(),
+    java_runtime = "//toolchains:remotejdk_21",
+    source_version = "21",
+    target_version = "21",
+)
+
+default_java_toolchain(
     name = "prebuilt_toolchain",
     configuration = PREBUILT_TOOLCHAIN_CONFIGURATION,
     toolchain_definition = False,
 )
+
+java_runtime_version_alias(
+    name = "remote_jdk8",
+    runtime_version = "remotejdk_8",
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "remotejdk_8",
+    actual = ":remote_jdk8",
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "remotejdk_11",
+    actual = ":remote_jdk11",
+    visibility = ["//visibility:public"],
+)
+
 
 # A JDK 11 for use as a --host_javabase.
 java_runtime_version_alias(
@@ -348,6 +375,12 @@ java_runtime_version_alias(
 java_runtime_version_alias(
     name = "remotejdk_20",
     runtime_version = "remotejdk_20",
+    visibility = ["//visibility:public"],
+)
+
+java_runtime_version_alias(
+    name = "remotejdk_21",
+    runtime_version = "remotejdk_21",
     visibility = ["//visibility:public"],
 )
 
